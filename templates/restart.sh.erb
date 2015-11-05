@@ -1,0 +1,14 @@
+# stop nginx
+sudo /usr/sbin/nginx -s stop
+
+# stop unicorn
+kill -9 $(cat <%= config[:app_root] %>/tmp/unicorn.pid)
+
+sudo cp <%= config[:app_root] %>/config/<%= config[:app_name] %>_nginx /etc/nginx/sites-available
+sudo ln -s /etc/nginx/sites-available/<%= config[:app_name] %>_nginx /etc/nginx/sites-enabled/<%= config[:app_name] %>_nginx
+
+# start nginx
+sudo /usr/sbin/nginx
+
+# start unicorn
+cd <%= config[:app_root] %> && bundle && bundle exec unicorn -E development -c <%= unicorn_config_path %> -D
