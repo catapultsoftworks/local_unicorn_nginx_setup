@@ -34,7 +34,7 @@ listen <%= config[:unicorn_port] %>, :tcp_nopush => true
 timeout <%= config[:http_timeout] %>
 
 # feel free to point this anywhere accessible on the filesystem
-pid APP_PATH + "/tmp/pid/unicorn.pid"
+pid APP_PATH + "/tmp/unicorn.pid"
 #pid "/path/to/app/shared/pids/unicorn.pid"
 
 # By default, the Unicorn logger will write to stderr.
