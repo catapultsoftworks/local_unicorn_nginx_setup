@@ -9,16 +9,17 @@ upstream <%= config[:app_name] %>_unicorn {
 server{
 
 	listen <%= config[:http_port] %>;
-	error_log  /apps/<%= config[:app_name] %>/log/nginx_error.log  warn;
-	access_log /apps/<%= config[:app_name] %>/log/nginx_access.log;
+	server_name <%= config[:app_name] %>;
+	error_log  <%= config[:app_root] %>/log/nginx_error.log  warn;
+	access_log <%= config[:app_root] %>/log/nginx_access.log;
 
-	root /apps/<%= config[:app_name] %>/public;
+	root <%= config[:app_root] %>/public;
 	try_files $uri/index.html $uri @<%= config[:app_name] %>_unicorn;
 
 	client_max_body_size 5M;
 
 	location @<%= config[:app_name] %>_unicorn{
-		proxy_set_header X-Request-Start    "t=${msec}";
+		#proxy_set_header X-Request-Start    "t=${msec}";
 		proxy_set_header X-Real-IP			$remote_addr;
 		proxy_set_header X-Forwarded-For	$proxy_add_x_forwarded_for;
 		proxy_set_header X-Forwarded_Proto	https;
@@ -46,16 +47,17 @@ server{
 server{
 
 	listen <%= config[:ssl_port] %> ssl;
-    error_log  /apps/<%= config[:app_name] %>/log/nginx_error.log  warn;
-    access_log /apps/<%= config[:app_name] %>/log/nginx_access.log;
+	server_name <%= config[:app_name] %>;
+    error_log  <%= config[:app_root] %>/log/nginx_error.log  warn;
+    access_log <%= config[:app_root] %>/log/nginx_access.log;
 
-	root /apps/<%= config[:app_name] %>/public;
+	root <%= config[:app_root] %>/public;
 	try_files $uri/index.html $uri @<%= config[:app_name] %>_unicorn;
 
 	client_max_body_size 5M;
 
 	location @<%= config[:app_name] %>_unicorn{
-		proxy_set_header X-Request-Start    "t=${msec}";
+		#proxy_set_header X-Request-Start    "t=${msec}";
 		proxy_set_header X-Real-IP			$remote_addr;
 		proxy_set_header X-Forwarded-For	$proxy_add_x_forwarded_for;
 		proxy_set_header X-Forwarded_Proto	https;
