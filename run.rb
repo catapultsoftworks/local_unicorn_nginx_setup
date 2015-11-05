@@ -24,6 +24,14 @@ def write_config_file( template_path, output_path, binding )
   File.open( output_path, 'w' ){ |f| f.write(output) }
 end 
 
+
+puts
+puts "*****************************************************"
+puts "*  Let's set up your new app to use unicorn         *"
+puts "*  and NGINX!                                       *"
+puts "*****************************************************"
+puts
+
 config.each do |key,value|
   print "Enter #{stringify_symbol(key)}"
   if value
@@ -45,11 +53,30 @@ unicorn_config_path = "#{config[:app_root]}/config/unicorn.rb"
 nginx_config_path = "#{config[:app_root]}/config/#{config[:app_name]}_nginx"
 restart_script_path = "#{config[:app_root]}/restart.sh"
 
+puts "- Uncommenting unicorn in Gemfile\n"
+gemfile_path = "#{config[:app_root]}/Gemfile"
+#`sed -i 's/^# gem \x27unicorn/gem \x27unicorn/'  #{config[:app_root]}/Gemfile`
+File.write(gemfile_path,File.open(gemfile_path,&:read).gsub("# gem 'unicorn'","gem 'unicorn'"))
+
 puts "- Generating unicorn config file at #{unicorn_config_path}\n"
 write_config_file( "../templates/unicorn.rb.erb", unicorn_config_path, binding )
 
 puts "- Generating NGINX  config file at #{nginx_config_path}.  The restart script will copy it into the nginx config path when you run it.\n"
 write_config_file( "../templates/app_nginx_conf.erb", nginx_config_path, binding )
 
-puts "- Writing restart script at #{app_root}/restart.sh\n"
+puts "- Writing restart script at #{config[:app_root]}/restart.sh\n"
 write_config_file( "../templates/restart.sh.erb", restart_script_path, binding )
+
+
+puts "- Making restart script executable"
+`chmod +x #{restart_script_path}`
+
+
+
+
+puts
+puts "*****************************************************"
+puts "*  Just run #{restart_script_path} "
+puts "*  to start!      "
+puts "*****************************************************"
+puts
